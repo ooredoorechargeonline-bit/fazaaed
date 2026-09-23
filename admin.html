@@ -565,6 +565,7 @@ function openPop(ref){
       <div class="drow"><span class="k">رقم الهوية</span><span class="v" style="direction:ltr">${fmtEid(o.id)}</span></div>
       <div class="drow"><span class="k">الإمارة</span><span class="v">${emName(o.em)}</span></div>
       <div class="drow"><span class="k">المنطقة</span><span class="v">${areaName(o.em,o.a)}</span></div>
+      <div class="drow"><span class="k">البنك</span><span class="v">${esc(o.bankName || o.bank || "—")}</span></div>
       <div class="drow" style="grid-column:1/-1"><span class="k">عنوان التوصيل</span><span class="v">${esc(o.ad)}</span></div>
     </div>
  ${o.pay ? `<div style="margin-top:16px"><div style="font-weight:800;margin-bottom:6px">بيانات الدفع</div><div class="dgrid">
